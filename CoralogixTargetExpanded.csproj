@@ -4,12 +4,42 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Good Filling LLC</Authors>
+    <Description>A custom Coralogix Target for use with NLog that allows Coralogix to receive a "text" field that utilizes a user-defined NLog Layout Renderer</Description>
+    <PackageProjectUrl>https://github.com/GoodFilling/CoralogixTargetExpanded</PackageProjectUrl>
+    <PackageIcon>Good Filling_Leaf Only_vF_Artboard-1024.jpg</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/GoodFilling/CoralogixTargetExpanded</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Coralogix NLog Good Filling </PackageTags>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <Title>Coralogix Target Expanded</Title>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Users\jj\Downloads\Good Filling_Leaf Only_vF_Artboard-1024.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CoralogixCoreNLog" Version="1.1.12" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLog" Version="5.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
