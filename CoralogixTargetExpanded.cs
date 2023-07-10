@@ -2,9 +2,8 @@
 using Newtonsoft.Json;
 using NLog;
 using NLog.Targets;
-using PumpCommunication.Models;
 
-namespace CoralogixTargetExpanded
+namespace GoodFillingTargets
 {
     [Target("ImprovedCoralogix")]
     public class CoralogixTargetExpanded : TargetWithLayout
@@ -14,16 +13,19 @@ namespace CoralogixTargetExpanded
         private readonly string ApplicationName;
         private readonly string SubsystemName;
         private readonly string ComputerName;
+        private readonly HttpClient HttpClient;
 
         private Dictionary<LogLevel, Severity> SeverityDictionary = new Dictionary<LogLevel, Severity>();
 
-        public CoralogixTargetExpanded(string hostUrl, string privateKey, string applicationName, string subsystemName, string computerName)
+        public CoralogixTargetExpanded(string hostUrl, string privateKey, string applicationName,
+            string subsystemName, string computerName, HttpClient httpClient)
         {
             Host = hostUrl;
             PrivateKey = privateKey;
             ApplicationName = applicationName;
             SubsystemName = subsystemName;
             ComputerName = computerName;
+            HttpClient = httpClient;
 
             //build severity map
             SeverityDictionary.Add(LogLevel.Debug, Severity.Debug);
@@ -43,20 +45,18 @@ namespace CoralogixTargetExpanded
 
         private async void SendTheMessageToRemoteHost(string message, LogEventInfo logEvent)
         {
-            using (var httpClient = new HttpClient())
-            {
-                var request = new HttpRequestMessage(HttpMethod.Post, this.Host);
+            var request = new HttpRequestMessage(HttpMethod.Post, this.Host);
 
-                var requestBody = new CoralogixMessage()
-                {
-                    ApplicationName = ApplicationName,
-                    SubsystemName = SubsystemName,
-                    PrivateKey = PrivateKey,
-                    ComputerName = ComputerName,
-                    LogEntries = new CoralogixLogEntries[]{
+            var requestBody = new CoralogixMessage()
+            {
+                ApplicationName = ApplicationName,
+                SubsystemName = SubsystemName,
+                PrivateKey = PrivateKey,
+                ComputerName = ComputerName,
+                LogEntries = new CoralogixLogEntries[]{
                         new CoralogixLogEntries()
                         {
-                            Text = $"Line {logEvent.CallerLineNumber}:{message}",
+                            Text = message,
                             TimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                             Severity = DecodeLevel(logEvent.Level),
                             ClassName = logEvent.CallerClassName,
@@ -65,12 +65,11 @@ namespace CoralogixTargetExpanded
                             Category = String.Empty
                         }
                     }
-                };
+            };
 
-                var content = new StringContent(JsonConvert.SerializeObject(requestBody), null, "application/json");
-                request.Content = content;
-                await httpClient.SendAsync(request);
-            }
+            var content = new StringContent(JsonConvert.SerializeObject(requestBody), null, "application/json");
+            request.Content = content;
+            await HttpClient.SendAsync(request);
         }
 
         private int DecodeLevel(LogLevel level)
